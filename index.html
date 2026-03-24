@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mecart Blog — Industrial Noise Control</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{--blu:#6BA4D6;--blu-d:#5A8FBE;--blk:#0B0B0B;--lbg:#F2F1EE;--sla:#8B9DB5;--xlb:#F5F5F3;--txt:#3D3D3D;--bdr:#C2BFB8;--ibg:#E1EBF4;--wht:#FFF;--f:'DM Sans',sans-serif;--fd:'DM Serif Display',serif;--cw:680px;--ww:900px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--f);color:var(--txt);font-size:18px;line-height:1.7;background:var(--wht);-webkit-font-smoothing:antialiased}
+
+/* Progress + Chapter */
+#prog{position:fixed;top:0;left:0;height:3px;background:var(--blu);width:0%;z-index:9999;transition:width .1s}
+#chap{position:fixed;top:3px;left:0;right:0;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--bdr);padding:8px 24px;z-index:9998;display:flex;align-items:center;gap:12px;font-size:13px;color:var(--sla);transform:translateY(-100%);transition:transform .3s;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+#chap.v{transform:translateY(0)}
+#chap .cn{background:var(--blu);color:#fff;font-weight:700;padding:2px 10px;border-radius:12px;font-size:12px}
+#chap .ct{font-weight:600;color:var(--blk)}
+#chap .cp{margin-left:auto;font-size:12px}
+
+/* Back to top */
+#btt{position:fixed;bottom:24px;right:24px;width:48px;height:48px;border-radius:50%;background:var(--blu);color:#fff;border:none;font-size:20px;cursor:pointer;z-index:999;opacity:0;transition:opacity .3s,transform .2s;box-shadow:0 4px 16px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center}
+#btt.v{opacity:1}#btt:hover{transform:scale(1.1);background:var(--blu-d)}
+
+/* Layout */
+.cly{display:grid;grid-template-columns:220px 1fr;gap:48px;max-width:1100px;margin:0 auto;padding:0 24px}
+
+/* Sticky TOC */
+.toc-s{position:sticky;top:60px;align-self:start;max-height:calc(100vh - 80px);overflow-y:auto;padding-right:16px}
+.toc-s h4{font-size:12px;text-transform:uppercase;letter-spacing:2px;color:var(--sla);margin-bottom:16px;font-weight:700}
+.toc-s a{display:block;padding:8px 0 8px 16px;font-size:14px;color:var(--sla);text-decoration:none;border-left:2px solid transparent;transition:all .2s;line-height:1.4}
+.toc-s a:hover{color:var(--blu)}.toc-s a.active{color:var(--blu);border-left-color:var(--blu);font-weight:700}
+.ac{max-width:var(--cw)}
+
+/* Breadcrumbs */
+.bc{font-size:13px;color:var(--sla);padding:20px 0 12px;max-width:1100px;margin:0 auto}
+.bc a{color:var(--sla);text-decoration:none}.bc a:hover{color:var(--blu)}.bc span{margin:0 6px}
+
+/* Tags, headings */
+.ct-tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:2.5px;color:var(--blu);text-transform:uppercase;margin-bottom:12px}
+h1{font-family:var(--fd);font-size:44px;color:var(--blk);line-height:1.15;margin-bottom:16px;max-width:720px}
+h2{font-family:var(--fd);font-size:32px;color:var(--blk);line-height:1.2;margin:56px 0 20px;position:relative;scroll-margin-top:70px}
+h2 .al{position:absolute;left:-28px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--bdr);text-decoration:none;opacity:0;transition:opacity .2s;cursor:pointer}
+h2:hover .al{opacity:.6}h2 .al:hover{opacity:1;color:var(--blu)}
+h3{font-size:22px;font-weight:700;color:var(--blu);margin:32px 0 12px}
+h3 .mi{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;background:var(--ibg);margin-right:8px;font-size:15px;vertical-align:middle;position:relative;top:-1px}
+
+/* Meta */
+.mb{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px;color:var(--sla);margin-bottom:8px}.mb .sep{color:var(--bdr)}
+
+/* Hero */
+.hero{width:100vw;margin-left:calc(-50vw + 50%);height:420px;background:linear-gradient(135deg,#1a2a3a 0%,#2a3a4a 50%,#1a2530 100%);position:relative;overflow:hidden;margin-bottom:40px}
+.hero::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 50%,rgba(0,0,0,.08) 100%)}
+.hero .ph{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:rgba(255,255,255,.3);font-size:14px;letter-spacing:3px;text-transform:uppercase;z-index:1}
+
+/* Highlights */
+.hl{background:linear-gradient(180deg,transparent 55%,rgba(107,164,214,.18) 55%);padding:0 3px;border-radius:2px;font-weight:700;color:var(--blk)}
+.hl-w{background:linear-gradient(180deg,transparent 55%,rgba(245,166,35,.15) 55%);padding:0 3px;border-radius:2px;font-weight:700;color:var(--blk)}
+
+/* TL;DR */
+.tldr{background:var(--ibg);border-left:6px solid var(--blu);padding:28px 32px;margin-bottom:40px;border-radius:0 8px 8px 0}
+.tldr .lb{font-size:12px;font-weight:700;letter-spacing:2px;color:var(--blu);margin-bottom:16px;text-transform:uppercase}
+.tldr ul{list-style:none;padding:0}.tldr li{padding:6px 0 6px 20px;position:relative;font-size:17px;line-height:1.6}
+.tldr li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--blu);position:absolute;left:0;top:14px}
+
+/* Pull quote */
+.pq{position:relative;margin:48px 0;padding:32px 40px 32px 48px;width:calc(var(--cw) + 60px);margin-left:-30px}
+.pq::before{content:'\201C';position:absolute;top:-12px;left:-4px;font-family:var(--fd);font-size:96px;color:var(--blu);opacity:.15;line-height:1}
+.pq p{font-family:var(--fd);font-size:24px;line-height:1.5;color:var(--blk);font-style:italic;margin-bottom:12px}
+.pq .ps{font-family:var(--f);font-size:14px;color:var(--sla);font-style:normal;font-weight:500;padding-top:12px;border-top:2px solid var(--blu);display:inline-block}
+
+/* TOC inline */
+.toc-i{margin-bottom:48px;padding:24px 0;border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr)}
+.toc-i h4{font-size:13px;text-transform:uppercase;letter-spacing:2px;color:var(--sla);margin-bottom:12px;font-weight:700}
+.toc-i a{display:block;padding:6px 0;color:var(--blu);text-decoration:none;font-size:16px;font-weight:500}.toc-i a:hover{text-decoration:underline}
+
+/* Body text */
+.ac p{margin-bottom:20px}.ac strong{color:var(--blk)}.ac ul{padding-left:24px;margin-bottom:20px}
+.ac li{margin-bottom:8px;padding-left:8px;list-style-type:disc}.ac li::marker{color:var(--blu)}
+
+/* DYK + Callout */
+.dyk{background:var(--ibg);border-left:6px solid var(--blu);padding:24px 28px;margin:32px 0;border-radius:0 8px 8px 0}
+.dyk .lb{font-size:12px;font-weight:700;letter-spacing:2px;color:var(--blu);margin-bottom:8px}
+.co{background:var(--lbg);border-left:6px solid var(--blu);padding:24px 28px;margin:32px 0;border-radius:0 8px 8px 0}
+.co .lb{font-size:12px;font-weight:700;letter-spacing:2px;color:var(--blu);margin-bottom:8px}
+
+/* Stat bar */
+.sb{display:grid;grid-template-columns:repeat(3,1fr);margin:32px 0;border-radius:8px;overflow:hidden;width:calc(var(--cw) + 100px);margin-left:-50px}
+.sb .st{background:var(--blk);padding:28px 16px;text-align:center}
+.sb .nm{font-family:var(--fd);font-size:36px;color:var(--blu);display:block;margin-bottom:4px}
+.sb .sl{font-size:13px;color:rgba(255,255,255,.7)}
+
+/* Image placeholder */
+.ip{background:var(--ibg);border:2px dashed var(--blu);border-radius:8px;padding:40px 20px;text-align:center;margin:32px 0;color:var(--sla);font-size:14px}
+.ip .ic{font-size:32px;margin-bottom:8px}.ip .il{font-weight:700;color:var(--blu);margin-bottom:4px}
+
+/* Bar chart */
+.bch{margin:32px 0;width:calc(var(--cw) + 60px);margin-left:-30px}
+.br{display:grid;grid-template-columns:180px 1fr 60px;align-items:center;gap:12px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,.04)}
+.br:hover{background:var(--xlb);border-radius:4px}
+.bl{font-size:14px;font-weight:600;color:var(--blk);text-align:right;padding-right:8px}
+.bt{height:28px;background:var(--xlb);border-radius:4px;overflow:hidden;position:relative}
+.bf{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blu),var(--blu-d));width:0%;transition:width 1.2s cubic-bezier(.25,.46,.45,.94);position:relative}
+.bf.dg{background:linear-gradient(90deg,var(--blu),#E8835A)}.bf.ex{background:linear-gradient(90deg,#E8835A,#D4503A)}
+.bth{position:absolute;top:0;bottom:0;width:2px;background:#D4503A;z-index:2;left:calc(85/130*100%)}
+.bth::after{content:'85 dBA';position:absolute;top:-20px;left:-16px;font-size:10px;color:#D4503A;font-weight:700;white-space:nowrap}
+.bv{font-size:13px;color:var(--sla);font-weight:500}
+.bleg{display:flex;gap:20px;margin-top:16px;font-size:12px;color:var(--sla);align-items:center;flex-wrap:wrap}
+.bleg .d{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:middle}
+.d-s{background:var(--blu)}.d-w{background:#E8835A}.d-d{background:#D4503A}
+.d-l{width:12px;height:2px;background:#D4503A;margin-right:4px;vertical-align:middle;display:inline-block}
+
+/* Contrast panel */
+.cp{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:40px 0;border-radius:12px;overflow:hidden;width:calc(var(--cw) + 100px);margin-left:-50px}
+.cp .sd{padding:40px 32px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
+.cp .sd-d{background:var(--blk)}.cp .sd-l{background:var(--xlb)}
+.cp .sd-lb{font-size:13px;text-transform:uppercase;letter-spacing:2px;font-weight:600}
+.cp .sd-d .sd-lb{color:var(--sla)}.cp .sd-l .sd-lb{color:var(--blu)}
+.cp .sd-st{font-family:var(--fd);font-size:36px}.cp .sd-d .sd-st{color:var(--sla)}.cp .sd-l .sd-st{color:var(--blu)}
+.cp .sd-ds{font-size:15px;max-width:280px}.cp .sd-d .sd-ds{color:rgba(255,255,255,.6)}.cp .sd-l .sd-ds{color:var(--txt)}
+.cp .sd-ic{font-size:40px;margin-bottom:8px}
+
+/* CTA boxes */
+.cta-i{background:var(--lbg);border-left:6px solid var(--blu);padding:24px 28px;margin:32px 0;border-radius:0 8px 8px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.cta-i p{margin:0;font-size:16px;flex:1;min-width:200px}
+.cta-f{background:var(--blk);padding:56px 40px;text-align:center;margin:48px 0;border-radius:12px;width:calc(var(--cw) + 100px);margin-left:-50px}
+.cta-f h3{color:#fff;font-size:28px;margin-bottom:12px;font-family:var(--fd)}.cta-f p{color:rgba(255,255,255,.7);margin-bottom:24px;font-size:17px}
+.btn{display:inline-block;padding:14px 32px;background:var(--blu);color:#fff;border:none;border-radius:6px;font-size:16px;font-weight:700;text-decoration:none;cursor:pointer;transition:all .2s;font-family:var(--f)}
+.btn:hover{background:var(--blu-d);transform:scale(1.02)}
+.btn-g{background:transparent;border:2px solid var(--blu);color:var(--blu);padding:12px 28px}.btn-g:hover{background:var(--blu);color:#fff}
+.sub-l{display:block;margin-top:12px;color:var(--sla);font-size:14px;text-decoration:none}.sub-l:hover{color:var(--blu)}
+
+/* Decision card */
+.dc-card{background:var(--blk);padding:40px;border-radius:12px;margin:40px 0;width:calc(var(--cw) + 100px);margin-left:-50px;text-align:center}
+.dc-card h3{color:#fff;font-family:var(--fd);font-size:26px;margin-bottom:20px}
+.dc-card .ql{list-style:none;padding:0;text-align:left;max-width:500px;margin:0 auto 24px}
+.dc-card .qi{padding:14px 0;border-bottom:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.8);font-size:16px;display:flex;justify-content:space-between;cursor:pointer;transition:color .2s}
+.dc-card .qi:hover{color:var(--blu)}.dc-card .qi .aw{color:var(--blu);font-size:18px}
+.dc-card .qf{color:rgba(255,255,255,.5);font-size:14px;margin-bottom:20px}
+
+/* Case study cards */
+.csc{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:32px 0;width:calc(var(--cw) + 100px);margin-left:-50px}
+.cc{background:#fff;border-radius:12px;overflow:hidden;border:1px solid var(--bdr);transition:box-shadow .3s,transform .2s;cursor:pointer}
+.cc:hover{box-shadow:0 8px 32px rgba(0,0,0,.1);transform:translateY(-4px)}
+.cc .th{height:140px;background:var(--ibg);display:flex;align-items:center;justify-content:center;color:var(--sla);font-size:13px;overflow:hidden}
+.cc:hover .th{transform:scale(1.05)}
+.cc .bd{padding:20px}.cc .mt{font-family:var(--fd);font-size:28px;color:var(--blu)}.cc .mt span{font-family:var(--f);font-size:14px;color:var(--txt)}
+.cc h4{font-size:17px;color:var(--blk);margin:8px 0}.cc p{font-size:14px;line-height:1.5;margin-bottom:12px}
+.cc .lk{font-size:14px;color:var(--blu);text-decoration:none;font-weight:600}.cc .lk:hover{text-decoration:underline}
+
+/* FAQ accordion */
+.fi{border-bottom:1px solid var(--bdr)}
+.fq{padding:20px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:700;color:var(--blk);min-height:56px}
+.fq:hover{color:var(--blu)}.fq .fic{font-size:24px;color:var(--blu);transition:transform .3s;flex-shrink:0;margin-left:16px}
+.fi.open .fq .fic{transform:rotate(45deg)}
+.fa{max-height:0;overflow:hidden;transition:max-height .3s;font-size:17px;line-height:1.7}
+.fi.open .fa{max-height:300px}.fai{padding:0 0 24px}
+
+/* Related */
+.rg{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:32px 0}
+.rc{border-radius:12px;overflow:hidden;border:1px solid var(--bdr);transition:box-shadow .3s,transform .2s;cursor:pointer}
+.rc:hover{box-shadow:0 8px 24px rgba(0,0,0,.08);transform:translateY(-3px)}
+.rc .th{height:120px;background:var(--ibg);display:flex;align-items:center;justify-content:center;color:var(--sla);font-size:12px}
+.rc .bd{padding:16px}.rc h4{font-size:16px;color:var(--blk);margin-bottom:6px}.rc p{font-size:13px;line-height:1.4;margin-bottom:8px}
+.rc .tg{font-size:11px;color:var(--sla);text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
+
+/* Dual CTA */
+.dcta{display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:12px;overflow:hidden;max-width:var(--ww);margin:48px auto}
+.dcta .ch{padding:40px 32px;text-align:center}.dcta .ch:first-child{background:var(--blk)}.dcta .ch:last-child{background:var(--xlb)}
+.dcta .ch h4{font-family:var(--fd);font-size:22px;margin-bottom:12px}.dcta .ch:first-child h4{color:#fff}.dcta .ch:last-child h4{color:var(--blk)}
+.dcta .ch p{font-size:15px;margin-bottom:20px;opacity:.8}.dcta .ch:first-child p{color:rgba(255,255,255,.7)}.dcta .ch:last-child p{color:var(--txt)}
+
+/* Author bio */
+.ab{display:flex;gap:20px;padding:24px;margin:48px 0;background:var(--xlb);border-radius:12px;border:1px solid var(--bdr);align-items:center}
+.ab .av{width:72px;height:72px;border-radius:50%;background:var(--ibg);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--sla);font-size:28px}
+.ab .inf{flex:1}.ab .lb2{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--sla);margin-bottom:4px}
+.ab .nm{font-size:18px;font-weight:700;color:var(--blk);margin-bottom:4px}.ab .ds{font-size:14px;line-height:1.5}
+
+/* Brochure CTA */
+.bcta{background:var(--lbg);border-left:6px solid var(--blu);padding:28px 32px;margin:40px 0;border-radius:0 8px 8px 0}
+.bcta h4{font-size:22px;color:var(--blk);margin-bottom:8px}.bcta p{font-size:16px;margin-bottom:16px}
+
+/* Footer */
+.fz{max-width:1100px;margin:0 auto;padding:0 24px 80px}
+.slb{font-size:12px;text-transform:uppercase;letter-spacing:2.5px;color:var(--blu);font-weight:700;margin-bottom:16px;padding-bottom:8px;border-bottom:3px solid var(--blu);display:inline-block}
+
+/* Scroll reveal */
+.rv{opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}.rv.vis{opacity:1;transform:translateY(0)}
+
+/* ═══ NEW: Expandable sections ═══ */
+.sec-exp .sec-pre{position:relative}
+.sec-exp .sec-bd{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.25,.46,.45,.94)}
+.sec-exp.exp .sec-bd{max-height:5000px}
+.sec-exp .sec-pre::after{content:'';position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(transparent,#fff);pointer-events:none;transition:opacity .3s}
+.sec-exp.exp .sec-pre::after{opacity:0;height:0}
+.rmt{display:inline-flex;align-items:center;gap:6px;font-size:15px;font-weight:600;color:var(--blu);cursor:pointer;border:none;background:none;padding:8px 0;margin-top:4px;transition:color .2s;font-family:var(--f)}
+.rmt:hover{color:var(--blu-d)}.rmt .ai{transition:transform .3s;font-size:12px}
+.sec-exp.exp .rmt .ai{transform:rotate(180deg)}
+
+/* ═══ NEW: Tabs ═══ */
+.tabs{margin:24px 0}
+.tn{display:flex;gap:0;border-bottom:2px solid var(--bdr)}
+.tb{padding:12px 20px;font-size:15px;font-weight:600;color:var(--sla);background:none;border:none;cursor:pointer;position:relative;transition:color .2s;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:var(--f)}
+.tb:hover{color:var(--blk)}.tb.act{color:var(--blu);border-bottom-color:var(--blu)}
+.tp{display:none;padding:24px 0;animation:tf .3s}.tp.act{display:block}
+@keyframes tf{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══ NEW: Hierarchy accordion ═══ */
+.ha{margin:24px 0}
+.hi{border:1px solid var(--bdr);border-radius:8px;margin-bottom:8px;overflow:hidden;transition:box-shadow .2s}
+.hi:hover{box-shadow:0 2px 8px rgba(0,0,0,.04)}.hi.op{border-color:var(--blu)}
+.hq{padding:16px 20px;cursor:pointer;display:flex;align-items:center;gap:12px;font-size:17px;font-weight:700;color:var(--blk);background:var(--xlb);transition:background .2s}
+.hi.op .hq{background:var(--ibg)}.hq:hover{background:var(--ibg)}
+.hq .hic{width:32px;height:32px;border-radius:6px;background:var(--ibg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.hi.op .hq .hic{background:var(--blu)}
+.hq .hch{margin-left:auto;font-size:14px;color:var(--sla);transition:transform .3s}
+.hi.op .hch{transform:rotate(180deg);color:var(--blu)}
+.hq .htg{font-size:11px;padding:2px 8px;border-radius:10px;background:var(--lbg);color:var(--sla);font-weight:600;text-transform:uppercase;letter-spacing:1px}
+.hi.op .htg{background:var(--blu);color:#fff}
+.haa{max-height:0;overflow:hidden;transition:max-height .3s}.hi.op .haa{max-height:400px}
+.hai{padding:0 20px 20px;font-size:17px;line-height:1.7}.hai ul{margin-top:8px}
+
+/* ═══ NEW: Two-column ═══ */
+.twc{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin:24px 0;width:calc(var(--cw) + 60px);margin-left:-30px}
+.twc .col h3{margin-top:0}
+
+/* ═══ Responsive ═══ */
+@media(max-width:1023px){.cly{grid-template-columns:1fr;gap:0}.toc-s{display:none}.sb,.cta-f,.csc,.cp,.dc-card,.bch,.pq,.twc{width:100%;margin-left:0}h1{font-size:36px}}
+@media(max-width:767px){h1{font-size:30px}h2{font-size:26px}.sb{grid-template-columns:1fr}.csc,.rg{grid-template-columns:1fr}.cta-f{padding:40px 24px}.tldr{padding:20px}.ab{flex-direction:column;text-align:center}.bc{padding:12px 24px}.pq{padding:24px 20px 24px 32px}.pq p{font-size:20px}.pq::before{font-size:64px;left:-2px}.bch{width:100%;margin-left:0}.br{grid-template-columns:100px 1fr 50px;gap:8px}.bl{font-size:12px}#chap{padding:6px 16px;font-size:12px}.twc{grid-template-columns:1fr;width:100%;margin-left:0}.cp{grid-template-columns:1fr}.dcta{grid-template-columns:1fr}.dc-card{width:100%;margin-left:0;padding:32px 24px}.tn{overflow-x:auto;-webkit-overflow-scrolling:touch}.tb{white-space:nowrap;font-size:14px;padding:10px 16px}}
+</style>
+</head>
+<body>
+
+<div id="prog"></div>
+<div id="chap"><span class="cn" id="cn">1</span><span class="ct" id="ctt">Key Characteristics</span><span class="cp" id="cpct">Section 1 of 7</span></div>
+<button id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- ABOVE THE FOLD -->
+<div style="max-width:1100px;margin:0 auto;padding:0 24px;">
+  <div class="bc"><a href="#">Home</a><span>›</span><a href="#">Blog</a><span>›</span><a href="#">Noise Control</a><span>›</span>Industrial Noise</div>
+  <div class="ct-tag">NOISE CONTROL</div>
+  <h1>Industrial Noise: What It Is, Why It's Dangerous, and How to Control It</h1>
+  <div class="mb"><span>By <strong>Mecart Engineering Team</strong></span><span class="sep">·</span><span>Updated March 2025</span><span class="sep">·</span><span>15 min read</span></div>
+</div>
+<div class="hero"><div class="ph">HERO IMAGE — INDUSTRIAL ENVIRONMENT</div></div>
+
+<div style="max-width:1100px;margin:0 auto;padding:0 24px;">
+  <div class="ac">
+    <p><strong>Industrial noise is unwanted sound generated by machinery, equipment, and manufacturing processes that exceeds safe exposure levels.</strong> Any sustained noise above <span class="hl">85 dBA</span> is considered hazardous by OSHA, NIOSH, and the WHO. It causes irreversible hearing loss, reduces workplace productivity by up to <span class="hl-w">34%</span>, and costs U.S. employers <span class="hl">$242 million per year</span> in compensation claims.</p>
+  </div>
+
+  <div class="tldr rv" style="max-width:var(--cw);">
+    <div class="lb">KEY TAKEAWAYS</div>
+    <ul>
+      <li><strong>Industrial noise above 85 dBA causes irreversible hearing loss</strong> and costs U.S. employers $242 million/year in compensation claims (NIOSH).</li>
+      <li><strong>Noise reduces problem-solving ability by 34%</strong> and increases errors, fatigue, and employee turnover.</li>
+      <li><strong>OSHA limit: 90 dBA / 8 hours. NIOSH recommends 85 dBA.</strong> Canada: 87 dBA (ESDC).</li>
+      <li><strong>Engineering controls (acoustic enclosures, control rooms, operator cabs)</strong> are the most effective fix, reducing noise 20–39 dBA.</li>
+      <li><strong>No single method guarantees protection.</strong> A layered approach is essential.</li>
+    </ul>
+  </div>
+
+  <div class="toc-i" style="max-width:var(--cw);">
+    <h4>Table of Contents</h4>
+    <a href="#s1">1. Key Characteristics of Industrial Noise</a>
+    <a href="#s2">2. Health, Productivity, and Financial Impact</a>
+    <a href="#s3">3. Noise Regulations: OSHA, NIOSH, WHO, Canada</a>
+    <a href="#s4">4. Noise Levels by Industry</a>
+    <a href="#s5">5. How to Control Industrial Noise</a>
+    <a href="#s6">6. Real-World Engineering Control Results</a>
+    <a href="#s7">7. FAQ</a>
+  </div>
+</div>
+
+<!-- ARTICLE BODY -->
+<div class="cly">
+  <aside class="toc-s" id="toc-s">
+    <h4>Contents</h4>
+    <a href="#s1" data-s="s1">Key Characteristics</a>
+    <a href="#s2" data-s="s2">Health & Productivity</a>
+    <a href="#s3" data-s="s3">Regulations</a>
+    <a href="#s4" data-s="s4">Noise by Industry</a>
+    <a href="#s5" data-s="s5">How to Control</a>
+    <a href="#s6" data-s="s6">Real-World Results</a>
+    <a href="#s7" data-s="s7">FAQ</a>
+  </aside>
+
+  <article class="ac" id="abody">
+
+    <!-- ═══ S1: CHARACTERISTICS (expandable) ═══ -->
+    <div class="sec-exp exp" id="sec1">
+      <h2 id="s1"><a class="al" href="#s1">#</a>Key Characteristics of Industrial Noise You Need to Understand</h2>
+      <div class="sec-pre">
+        <p><strong>Industrial noise has six key characteristics that determine how dangerous it is and how to control it: intensity (dB), frequency (Hz), duration, vibration, propagation, and directionality.</strong> Understanding these is essential before choosing a control solution.</p>
+      </div>
+      <div class="sec-bd">
+        <h3><span class="mi">📊</span>Noise Levels (dB)</h3>
+        <p>Industrial noise ranges from moderate (~60–70 dB) to extreme (100+ dB). <strong>Prolonged exposure above <span class="hl">85 dB</span> causes hearing damage. Above <span class="hl-w">120 dB</span>, harm is immediate.</strong> Every 10 dB increase is perceived as roughly twice as loud.</p>
+        <h3><span class="mi">🔊</span>Frequency (Hz)</h3>
+        <p><strong>Low-frequency noise travels long distances and penetrates barriers,</strong> making it the hardest to control. High-frequency noise is easier to block with acoustic panels.</p>
+        <h3><span class="mi">⏱</span>Duration Patterns</h3>
+        <ul><li><strong>Continuous:</strong> Conveyors, ventilation, compressors</li><li><strong>Intermittent:</strong> Drilling, stamping, batch processing</li><li><strong>Impulsive:</strong> Hammering, pneumatic tools, explosions</li></ul>
+        <div class="dyk rv"><div class="lb">DID YOU KNOW?</div><p>Sound doesn't increase linearly. Every 10 dB increase is perceived as twice as loud. 100 dB isn't "a bit more" than 90 dB. It's double. (Source: CDC/NIOSH)</p></div>
+        <div class="ip rv"><div class="ic">🖼</div><div class="il">INFOGRAPHIC: 6 CHARACTERISTICS</div>Branded illustration with icons for each characteristic</div>
+      </div>
+      <button class="rmt" onclick="toggleSec(this)">Read more <span class="ai">▼</span></button>
+    </div>
+
+    <!-- ═══ S2: HEALTH (two-column layout) ═══ -->
+    <div class="sec-exp exp" id="sec2">
+      <h2 id="s2"><a class="al" href="#s2">#</a>Why Industrial Noise Is a Serious Threat to Health and Productivity</h2>
+      <div class="sec-pre">
+        <p><strong>Industrial noise above <span class="hl">85 dBA</span> doesn't just damage hearing.</strong> It increases cardiovascular risk, causes chronic stress, reduces cognitive performance, and costs businesses millions every year.</p>
+      </div>
+      <div class="sec-bd">
+        <div class="sb rv"><div class="st"><span class="nm" data-t="242">0</span><span class="sl">$M/yr Claims</span></div><div class="st"><span class="nm" data-t="34">0</span><span class="sl">% Productivity Drop</span></div><div class="st"><span class="nm" data-t="85">0</span><span class="sl">dBA Threshold</span></div></div>
+
+        <!-- TWO COLUMN: Health + Productivity -->
+        <div class="twc rv">
+          <div class="col">
+            <h3><span class="mi">🫀</span>Health Effects</h3>
+            <p><strong>Prolonged exposure above 85 dBA leads to:</strong></p>
+            <ul><li><strong>Noise-induced hearing loss</strong> — permanent</li><li><strong>Tinnitus</strong> and balance disorders</li><li><strong>Cardiovascular problems</strong></li><li>Chronic stress, anxiety, depression</li><li>Cognitive decline, weakened immunity</li></ul>
+          </div>
+          <div class="col">
+            <h3><span class="mi">📉</span>Productivity & Cost</h3>
+            <p><strong>Workers at 90 dB show a <span class="hl-w">34% drop in problem-solving</span>.</strong> Errors increase, decisions slow down, fatigue rises.</p>
+            <p><strong>NIOSH: <span class="hl">$242M/year</span> in compensation claims.</strong> Add turnover, recruitment, fines, and the true cost is far higher.</p>
+          </div>
+        </div>
+
+        <div class="pq rv"><p>Occupational hearing loss is the most commonly recorded occupational illness in manufacturing, affecting roughly 22 million U.S. workers each year.</p><span class="ps">Source: CDC / NIOSH</span></div>
+        <div class="cta-i rv"><p>Not sure where your noise levels stand? Identifying your sources is the first step.</p><a href="#" class="btn">Talk to an Expert</a></div>
+      </div>
+      <button class="rmt" onclick="toggleSec(this)">Read more <span class="ai">▼</span></button>
+    </div>
+
+    <!-- ═══ S3: REGULATIONS (tabbed) ═══ -->
+    <div class="sec-exp exp" id="sec3">
+      <h2 id="s3"><a class="al" href="#s3">#</a>Industrial Noise Regulations: OSHA, NIOSH, WHO, and Canadian Standards</h2>
+      <div class="sec-pre">
+        <p><strong>The U.S. limit is <span class="hl">90 dBA/8hrs</span> (OSHA), NIOSH recommends <span class="hl">85 dBA</span>, Canada's federal limit is <span class="hl">87 dBA</span>.</strong> Sustained exposure above these thresholds causes permanent hearing damage.</p>
+      </div>
+      <div class="sec-bd">
+        <!-- TABS -->
+        <div class="tabs rv">
+          <div class="tn">
+            <button class="tb act" onclick="switchTab(event,'t-osha')">OSHA (U.S.)</button>
+            <button class="tb" onclick="switchTab(event,'t-niosh')">NIOSH (U.S.)</button>
+            <button class="tb" onclick="switchTab(event,'t-who')">WHO (Global)</button>
+            <button class="tb" onclick="switchTab(event,'t-ca')">Canada (ESDC)</button>
+          </div>
+          <div class="tp act" id="t-osha">
+            <ul><li><strong>PEL:</strong> <span class="hl">90 dBA</span> over 8-hour TWA</li><li><strong>Action Level:</strong> 85 dBA triggers Hearing Conservation Program</li><li><strong>Exchange Rate:</strong> 5 dB — every 5 dB increase halves allowable time</li></ul>
+          </div>
+          <div class="tp" id="t-niosh">
+            <ul><li><strong>REL:</strong> <span class="hl">85 dBA</span> over 8-hour TWA</li><li><strong>Exchange Rate:</strong> 3 dB — stricter than OSHA</li><li><strong>Basis:</strong> Based on risk of material hearing impairment over working lifetime</li></ul>
+          </div>
+          <div class="tp" id="t-who">
+            <ul><li><strong>Recommended limit:</strong> <span class="hl">85 dBA</span> over 8-hour TWA</li><li><strong>Context:</strong> Global guideline to minimize hearing loss risk</li><li><strong>Note:</strong> 1.1 billion people at risk of hearing loss worldwide</li></ul>
+          </div>
+          <div class="tp" id="t-ca">
+            <ul><li><strong>Federal limit:</strong> <span class="hl">87 dBA</span> over 8-hour TWA</li><li><strong>Employer obligation:</strong> Monitor, implement controls, provide PPE when exceeded</li><li><strong>Note:</strong> Provincial regulations may be stricter</li></ul>
+          </div>
+        </div>
+        <div class="ip rv"><div class="ic">🖼</div><div class="il">OSHA NOISE EXPOSURE TABLE</div>dB levels vs. allowable hours</div>
+        <div class="co rv"><div class="lb">COMPLIANCE NOTE</div><p>These are federal minimums. Many local jurisdictions enforce stricter standards. Always check local regulations.</p></div>
+      </div>
+      <button class="rmt" onclick="toggleSec(this)">Read more <span class="ai">▼</span></button>
+    </div>
+
+    <!-- ═══ S4: NOISE BY INDUSTRY ═══ -->
+    <div class="sec-exp exp" id="sec4">
+      <h2 id="s4"><a class="al" href="#s4">#</a>Industrial Noise Levels by Industry: How Loud Is Your Workplace?</h2>
+      <div class="sec-pre">
+        <p><strong>Most heavy industrial environments exceed the <span class="hl">85 dBA</span> safety threshold.</strong> Levels range from 63 dB in textiles to 120 dB in pulp and paper mills.</p>
+      </div>
+      <div class="sec-bd">
+        <table style="display:none"><thead><tr><th>Industry</th><th>Range</th></tr></thead><tbody><tr><td>Mining</td><td>69–118</td></tr><tr><td>Pulp & Paper</td><td>70–120</td></tr><tr><td>Forestry</td><td>71–110</td></tr><tr><td>Steel</td><td>78–106</td></tr><tr><td>Chemical</td><td>81–100</td></tr><tr><td>Automotive</td><td>81–98</td></tr><tr><td>Textile</td><td>63–115</td></tr><tr><td>Food</td><td>88–94</td></tr><tr><td>Petroleum</td><td>73–115</td></tr><tr><td>Beverage</td><td>86–96</td></tr><tr><td>Machinery</td><td>81–110</td></tr><tr><td>Cement</td><td>69–103</td></tr></tbody></table>
+        <div class="bch rv" id="nchart">
+          <div class="br"><span class="bl">Pulp & Paper</span><div class="bt"><div class="bth"></div><div class="bf ex" data-mx="120" data-mn="70"></div></div><span class="bv">70–120</span></div>
+          <div class="br"><span class="bl">Mining</span><div class="bt"><div class="bth"></div><div class="bf ex" data-mx="118" data-mn="69"></div></div><span class="bv">69–118</span></div>
+          <div class="br"><span class="bl">Textile</span><div class="bt"><div class="bth"></div><div class="bf dg" data-mx="115" data-mn="63"></div></div><span class="bv">63–115</span></div>
+          <div class="br"><span class="bl">Petroleum</span><div class="bt"><div class="bth"></div><div class="bf dg" data-mx="115" data-mn="73"></div></div><span class="bv">73–115</span></div>
+          <div class="br"><span class="bl">Forestry</span><div class="bt"><div class="bth"></div><div class="bf dg" data-mx="110" data-mn="71"></div></div><span class="bv">71–110</span></div>
+          <div class="br"><span class="bl">Machinery</span><div class="bt"><div class="bth"></div><div class="bf dg" data-mx="110" data-mn="81"></div></div><span class="bv">81–110</span></div>
+          <div class="br"><span class="bl">Steel</span><div class="bt"><div class="bth"></div><div class="bf dg" data-mx="106" data-mn="78"></div></div><span class="bv">78–106</span></div>
+          <div class="br"><span class="bl">Cement</span><div class="bt"><div class="bth"></div><div class="bf" data-mx="103" data-mn="69"></div></div><span class="bv">69–103</span></div>
+          <div class="br"><span class="bl">Chemical</span><div class="bt"><div class="bth"></div><div class="bf" data-mx="100" data-mn="81"></div></div><span class="bv">81–100</span></div>
+          <div class="br"><span class="bl">Automotive</span><div class="bt"><div class="bth"></div><div class="bf" data-mx="98" data-mn="81"></div></div><span class="bv">81–98</span></div>
+          <div class="br"><span class="bl">Beverage</span><div class="bt"><div class="bth"></div><div class="bf" data-mx="96" data-mn="86"></div></div><span class="bv">86–96</span></div>
+          <div class="br"><span class="bl">Food</span><div class="bt"><div class="bth"></div><div class="bf" data-mx="94" data-mn="88"></div></div><span class="bv">88–94</span></div>
+        </div>
+        <div class="bleg"><span><span class="d d-s"></span>Below 100 dB</span><span><span class="d d-w"></span>100–115 dB</span><span><span class="d d-d"></span>Above 115 dB</span><span><span class="d-l"></span>85 dBA threshold</span></div>
+        <div class="dyk rv"><div class="lb">DID YOU KNOW?</div><p>Mining operations can reach 118 dB — equivalent to standing next to a chainsaw. Hearing damage in under 15 minutes. (Source: NIOSH)</p></div>
+      </div>
+      <button class="rmt" onclick="toggleSec(this)">Read more <span class="ai">▼</span></button>
+    </div>
+
+    <!-- CONTRAST PANEL -->
+    <div class="cp rv">
+      <div class="sd sd-d"><div class="sd-ic">🏭</div><div class="sd-lb">On the plant floor</div><div class="sd-st">90–113 dB</div><div class="sd-ds">Dust. Heat. Vibration. Noise that causes permanent damage in minutes.</div></div>
+      <div class="sd sd-l"><div class="sd-ic">🛡</div><div class="sd-lb">Inside the enclosure</div><div class="sd-st">&lt;85 dBA</div><div class="sd-ds">Clean air. Controlled temperature. Safe for an 8-hour shift. Same plant, different world.</div></div>
+    </div>
+
+    <!-- ═══ S5: HOW TO CONTROL (hierarchy accordion) ═══ -->
+    <h2 id="s5"><a class="al" href="#s5">#</a>How to Control Industrial Noise: The Hierarchy of Solutions</h2>
+    <p><strong>The most effective approach follows a hierarchy.</strong> No single method guarantees protection. A layered strategy is essential.</p>
+
+    <div class="ha rv">
+      <div class="hi" onclick="toggleHier(this)"><div class="hq"><span class="hic">❌</span>1. Eliminate at the Source<span class="htg">Most effective</span><span class="hch">▼</span></div><div class="haa"><div class="hai">Remove the noise source entirely or redesign the process. When operations depend on heavy machinery, move to the next level.</div></div></div>
+      <div class="hi" onclick="toggleHier(this)"><div class="hq"><span class="hic">🔄</span>2. Substitute Equipment<span class="hch">▼</span></div><div class="haa"><div class="hai">Replace noisy machinery with quieter models. Use alternative materials or processes. Often the best cost-benefit option.</div></div></div>
+      <div class="hi op" onclick="toggleHier(this)"><div class="hq"><span class="hic">🛡</span>3. Engineering Controls<span class="htg">Recommended</span><span class="hch">▼</span></div><div class="haa" style="max-height:400px"><div class="hai"><strong>Address noise at the source or create barriers protecting workers.</strong> The most effective long-term solution.<ul><li><strong>Acoustic enclosures</strong> around loud machinery</li><li><strong>Modular control rooms and operator cabs</strong> isolating workers</li><li><strong>Noise barriers</strong> between source and work areas</li><li><strong>Industrial silencers</strong> on ventilation and exhausts</li></ul></div></div></div>
+      <div class="hi" onclick="toggleHier(this)"><div class="hq"><span class="hic">📋</span>4. Administrative Controls<span class="hch">▼</span></div><div class="haa"><div class="hai">Schedule noisy tasks during off-hours. Rotate employees through quieter assignments. Limits exposure time, not the noise itself.</div></div></div>
+      <div class="hi" onclick="toggleHier(this)"><div class="hq"><span class="hic">🎧</span>5. PPE<span class="htg">Last resort</span><span class="hch">▼</span></div><div class="haa"><div class="hai"><strong>Earmuffs and earplugs are the last line of defense, not the first.</strong> Depends on individual compliance, proper fit, and consistent use. Should supplement, not replace, other controls.</div></div></div>
+    </div>
+
+    <div class="ip rv"><div class="ic">🖼</div><div class="il">HIERARCHY OF CONTROLS PYRAMID</div>Eliminate > Substitute > Engineering > Administrative > PPE</div>
+    <div class="co rv"><div class="lb">WHY ENGINEERING CONTROLS WIN</div><p>PPE protects one person and depends on compliance. An acoustic enclosure protects everyone, every shift, zero reliance on individual behavior.</p></div>
+    <div class="cta-f rv"><h3>Need Help Choosing the Right Solution?</h3><p>Our engineers assess your facility and recommend the most effective approach.</p><a href="#" class="btn">Discuss with an Expert</a><a href="#" class="sub-l">or download the brochure →</a></div>
+
+
+    <!-- ═══ S6: CASE STUDIES ═══ -->
+    <h2 id="s6"><a class="al" href="#s6">#</a>Real-World Results: Engineering Controls in Action</h2>
+    <p><strong>Measurable, permanent noise reduction.</strong> Three real Mecart projects:</p>
+    <div class="csc rv">
+      <div class="cc"><div class="th">🖼 PHOTO</div><div class="bd"><div class="mt">39 dBA <span>reduction</span></div><h4>Modular Control Room</h4><p>Rio Tinto Alcan smelter. STC 45 brought noise well below 85 dBA.</p><a href="#" class="lk">Read case study →</a></div></div>
+      <div class="cc"><div class="th">🖼 PHOTO</div><div class="bd"><div class="mt">28 dBA <span>reduction</span></div><h4>Acoustic Enclosure</h4><p>Power transformer project. Community noise compliance achieved.</p><a href="#" class="lk">Read case study →</a></div></div>
+      <div class="cc"><div class="th">🖼 PHOTO</div><div class="bd"><div class="mt">25 dBA <span>reduction</span></div><h4>Operator Control Cabs</h4><p>Canfor lumber mill. STC 35, dustproof, fully assembled delivery.</p><a href="#" class="lk">Read case study →</a></div></div>
+    </div>
+    <div class="bcta rv"><h4>Want the Full Range of Solutions?</h4><p>Specs, project examples, and acoustic ratings in one document.</p><a href="#" class="btn btn-g">Download the Brochure</a></div>
+
+    <!-- ═══ S7: FAQ ═══ -->
+    <h2 id="s7"><a class="al" href="#s7">#</a>FAQ: Industrial Noise Control</h2>
+    <div class="fi"><div class="fq" onclick="toggleFaq(this)">What is a safe noise level?<span class="fic">+</span></div><div class="fa"><div class="fai"><strong>OSHA: 90 dBA/8hrs. NIOSH/WHO: 85 dBA.</strong> Canada: 87 dBA. Most professionals align with 85 dBA.</div></div></div>
+    <div class="fi"><div class="fq" onclick="toggleFaq(this)">Most effective way to reduce noise?<span class="fic">+</span></div><div class="fa"><div class="fai"><strong>Engineering controls.</strong> Enclosures, control rooms, and operator cabs protect everyone without relying on PPE compliance.</div></div></div>
+    <div class="fi"><div class="fq" onclick="toggleFaq(this)">How much can enclosures reduce noise?<span class="fic">+</span></div><div class="fa"><div class="fai"><strong>20–39 dBA</strong> depending on STC rating. STC 45 = 39 dBA reduction. STC 35 = 25 dBA reduction.</div></div></div>
+    <div class="fi"><div class="fq" onclick="toggleFaq(this)">Health effects of industrial noise?<span class="fic">+</span></div><div class="fa"><div class="fai"><strong>Hearing loss, cardiovascular issues, chronic stress, cognitive decline, sleep disorders.</strong> Costs employers $242M/year.</div></div></div>
+    <div class="fi"><div class="fq" onclick="toggleFaq(this)">U.S. vs Canada regulations?<span class="fic">+</span></div><div class="fa"><div class="fai"><strong>OSHA: 90 dBA (5 dB exchange). NIOSH: 85 dBA (3 dB). Canada ESDC: 87 dBA.</strong> Provincial rules may be stricter.</div></div></div>
+    <div class="fi"><div class="fq" onclick="toggleFaq(this)">Engineering controls vs PPE?<span class="fic">+</span></div><div class="fa"><div class="fai"><strong>Engineering controls protect everyone permanently at the source.</strong> PPE protects one person and depends on compliance. OSHA/NIOSH prefer engineering controls.</div></div></div>
+  </article>
+</div>
+
+<!-- FOOTER -->
+<div class="fz">
+  <div class="dcta rv"><div class="ch"><h4>Ready to discuss your project?</h4><p>Talk to an engineer about a custom noise control solution.</p><a href="#" class="btn">Request a Quote</a></div><div class="ch"><h4>Still have questions?</h4><p>Our team helps you explore options. No commitment.</p><a href="#" class="btn btn-g">Talk to an Expert</a></div></div>
+  <div style="max-width:900px;margin:0 auto">
+    <div class="slb">Related Articles</div>
+    <div class="rg rv">
+      <div class="rc"><div class="th">🖼</div><div class="bd"><h4>What Is STC Rating?</h4><p>Understanding Sound Transmission Class for industrial acoustics</p><div class="tg">Acoustics</div></div></div>
+      <div class="rc"><div class="th">🖼</div><div class="bd"><h4>Control Room Design Checklist</h4><p>Everything to consider before specifying a control room</p><div class="tg">Guides</div></div></div>
+      <div class="rc"><div class="th">🖼</div><div class="bd"><h4>Canfor Operator Cab Case Study</h4><p>Custom cabs cut noise by 25 dBA at a NC lumber mill</p><div class="tg">Case Studies</div></div></div>
+    </div>
+    <div class="ab rv"><div class="av">👤</div><div class="inf"><div class="lb2">About the Author</div><div class="nm">Mecart Engineering Team</div><div class="ds">Engineering noise control and modular building solutions since 1974. Over 4,500 projects across North America.</div></div></div>
+  </div>
+</div>
+
+<script>
+// Progress bar
+const pb=document.getElementById('prog'),ab=document.getElementById('abody');
+function uProg(){const r=ab.getBoundingClientRect(),t=ab.scrollHeight,s=Math.max(0,-r.top);pb.style.width=Math.min(100,(s/(t-window.innerHeight))*100)+'%'}
+
+// Back to top + social
+const bt=document.getElementById('btt');
+function uScr(){uProg();const s=window.scrollY>window.innerHeight;bt.classList.toggle('v',s)}
+window.addEventListener('scroll',uScr,{passive:true});
+
+// Sticky TOC
+const tl=document.querySelectorAll('.toc-s a'),secs=document.querySelectorAll('h2[id]');
+const tObs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){tl.forEach(l=>l.classList.remove('active'));const a=document.querySelector(`.toc-s a[data-s="${x.target.id}"]`);if(a)a.classList.add('active')}})},{rootMargin:'-80px 0px -60% 0px'});
+secs.forEach(s=>tObs.observe(s));
+
+// Chapter marker
+const cm=document.getElementById('chap'),cn=document.getElementById('cn'),ctt=document.getElementById('ctt'),cpct=document.getElementById('cpct');
+const sn={s1:'Key Characteristics',s2:'Health & Productivity',s3:'Regulations',s4:'Noise by Industry',s5:'How to Control',s6:'Real-World Results',s7:'FAQ'};
+const si={s1:'1',s2:'2',s3:'3',s4:'4',s5:'5',s6:'6',s7:'7'};
+let curS=null;
+const cObs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting&&sn[x.target.id]){curS=x.target.id;cn.textContent=si[curS];ctt.textContent=sn[curS];cpct.textContent='Section '+si[curS]+' of 7'}})},{rootMargin:'-60px 0px -70% 0px'});
+secs.forEach(s=>cObs.observe(s));
+function uCM(){cm.classList.toggle('v',window.scrollY>800&&curS)}
+window.addEventListener('scroll',uCM,{passive:true});
+
+// FAQ
+function toggleFaq(el){const i=el.parentElement,w=i.classList.contains('open');document.querySelectorAll('.fi').forEach(x=>{x.classList.remove('open');x.querySelector('.fa').style.maxHeight='0'});if(!w){i.classList.add('open');i.querySelector('.fa').style.maxHeight=i.querySelector('.fa').scrollHeight+'px'}}
+
+// Scroll reveal
+const rvs=document.querySelectorAll('.rv');
+const rObs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('vis');rObs.unobserve(x.target)}})},{threshold:.15});
+rvs.forEach(r=>rObs.observe(r));
+
+// Stat counter
+const nms=document.querySelectorAll('.nm[data-t]');
+const nObs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting&&!x.target.dataset.an){x.target.dataset.an='1';const tgt=parseInt(x.target.dataset.t);const st=performance.now();(function step(now){const p=Math.min((now-st)/1200,1);x.target.textContent=Math.floor((1-Math.pow(1-p,3))*tgt);if(p<1)requestAnimationFrame(step);else x.target.textContent=tgt})(st)}})},{threshold:.5});
+nms.forEach(n=>nObs.observe(n));
+
+// Bar chart animation
+const nc=document.getElementById('nchart');
+if(nc){const bObs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting&&!x.target.dataset.an){x.target.dataset.an='1';x.target.querySelectorAll('.bf[data-mx]').forEach((f,i)=>{const mx=parseInt(f.dataset.mx),mn=parseInt(f.dataset.mn);setTimeout(()=>{f.style.marginLeft=(mn/130*100)+'%';f.style.width=((mx-mn)/130*100)+'%'},i*80)})}})},{threshold:.2});bObs.observe(nc)}
+
+// Expandable sections
+function toggleSec(btn){const sec=btn.closest('.sec-exp');sec.classList.toggle('exp');const bd=sec.querySelector('.sec-bd');if(sec.classList.contains('exp')){bd.style.maxHeight=bd.scrollHeight+'px'}else{bd.style.maxHeight='0'}}
+// Start all expanded by default (they have .exp class)
+document.querySelectorAll('.sec-exp.exp .sec-bd').forEach(bd=>{bd.style.maxHeight=bd.scrollHeight+'px'});
+
+// Tabs
+function switchTab(e,id){document.querySelectorAll('.tb').forEach(t=>t.classList.remove('act'));document.querySelectorAll('.tp').forEach(p=>p.classList.remove('act'));e.target.classList.add('act');document.getElementById(id).classList.add('act')}
+
+// Hierarchy accordion
+function toggleHier(el){const i=el.closest?el.closest('.hi'):el;const w=i.classList.contains('op');document.querySelectorAll('.hi').forEach(x=>{x.classList.remove('op');x.querySelector('.haa').style.maxHeight='0'});if(!w){i.classList.add('op');i.querySelector('.haa').style.maxHeight=i.querySelector('.haa').scrollHeight+'px'}}
+// Init engineering controls open
+document.querySelectorAll('.hi.op .haa').forEach(a=>{a.style.maxHeight=a.scrollHeight+'px'});
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'})}})});
+</script>
+</body></html>
